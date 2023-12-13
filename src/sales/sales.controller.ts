@@ -3,7 +3,6 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ValidationPipe } from 'src/pipes/validation.pipe';
 import { CreateSaleDto } from './dto/create-sale-dto';
 import { UpdateSaleDto } from './dto/update-sale.dto';
-import { Sale } from './sales.model';
 import { SalesService } from './sales.service';
 
 @ApiTags('Sales module')
@@ -12,7 +11,6 @@ export class SalesController {
     constructor(private salesService: SalesService) {}
 
     @ApiOperation({summary: 'Creating Sale'})
-    @ApiResponse({status: 200, type: Sale})
     @UsePipes(ValidationPipe)
     @Post()
     createSale(@Body() dto: CreateSaleDto) {
@@ -20,14 +18,12 @@ export class SalesController {
     }
 
     @ApiOperation({summary: 'Get all Sales'})
-    @ApiResponse({status: 200, type: [Sale]})
     @Get()
     getAllSales() {
         return this.salesService.getAllSales()
     }
 
     @ApiOperation({summary: 'Get Sale by id'})
-    @ApiResponse({status: 200, type: Sale})
     @Get(':id')
     getSaleById(@Param('id') id: number) {
         return this.salesService.getSaleById(id)

@@ -1,15 +1,14 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { ProductsService } from 'src/products/products.service';
 import { CreateSaleDto } from './dto/create-sale-dto';
 import { UpdateSaleDto } from './dto/update-sale.dto';
-import { Sale } from './sales.model';
-import { ProductsService } from 'src/products/products.service';
 
 @Injectable()
 export class SalesService {
   constructor(
-    @InjectModel(Sale) private saleRepository: typeof Sale,
     private productsService: ProductsService,
+    private prisma: PrismaService,
   ) {}
 
   async createSale(dto: CreateSaleDto) {
@@ -26,8 +25,10 @@ export class SalesService {
         );
       }
 
-      const sale = await this.saleRepository.create(dto);
-      await product.$set('amount', product.amount - dto.amount);
+      const sale = await this.prisma.sale.create({ data: dto });
+      await this.productsService.updateProduct(product.id, {
+        amount: product.amount - dto.amount,
+      });
 
       return sale;
     } catch (error) {
@@ -37,7 +38,7 @@ export class SalesService {
 
   async getAllSales() {
     try {
-      const sales = await this.saleRepository.findAll();
+      const sales = await this.prisma.sale.findMany();
       return sales;
     } catch (error) {
       console.log(error);
@@ -46,7 +47,7 @@ export class SalesService {
 
   async getSaleById(saleId: number) {
     try {
-      const sale = await this.saleRepository.findByPk(saleId);
+      const sale = await this.prisma.sale.findUnique({ where: { id: saleId } });
       return sale;
     } catch (error) {
       console.log(error);
@@ -55,7 +56,7 @@ export class SalesService {
 
   async deleteSale(saleId: number) {
     try {
-      const sale = await this.saleRepository.destroy({
+      const sale = await this.prisma.sale.delete({
         where: {
           id: saleId,
         },
@@ -69,10 +70,11 @@ export class SalesService {
 
   async updateSale(id: number, dto: UpdateSaleDto) {
     try {
-      const sale = await this.saleRepository.update(dto, {
+      const sale = await this.prisma.sale.update({
         where: {
           id,
         },
+        data: dto,
       });
 
       return sale;

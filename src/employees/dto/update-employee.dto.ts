@@ -17,9 +17,13 @@ export class UpdateEmployeeDto {
 
     @ApiProperty({example: 24, description: 'Age'})
     @IsNumber({}, {message: "age must be number"})
-    readonly age: number;
+    readonly age?: number;
 
     @ApiProperty({example: 1, description: 'Position id'})
     @IsNumber({}, {message: "poisitonId must be number"})
-    readonly positionId: number;
+    readonly positionId?: number;
+  
+    @ApiProperty({example: 'fsohgrsta.gsr2', description: 'Employees refresh token'})
+    @IsString()
+    readonly refreshToken?: string;
 }

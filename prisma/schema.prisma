@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Employee {
+  id           Int        @id @default(autoincrement())
+  apartment    Apartment? @relation(fields: [apartmentId], references: [id])
+  apartmentId  Int?
+  name         String?
+  surname      String?
+  age          Int?
+  position     Position?  @relation(fields: [positionId], references: [id])
+  positionId   Int?
+  email        String     @unique
+  password     String
+  refreshToken String?
+  roles        Roles[]
+}
+
+model Roles {
+  id          Int        @id @default(autoincrement())
+  name        String     @unique
+  description String?
+  users       Employee[]
+}
+
+model Apartment {
+  id        Int        @id @default(autoincrement())
+  street    String
+  city      City       @relation(fields: [cityId], references: [id])
+  cityId    Int
+  employees Employee[]
+  sales     Sale[]
+}
+
+model Position {
+  id        Int        @id @default(autoincrement())
+  name      String
+  employees Employee[]
+}
+
+model City {
+  id         Int         @id @default(autoincrement())
+  name       String
+  apartments Apartment[]
+}
+
+model Product {
+  id     Int    @id @default(autoincrement())
+  name   String
+  amount Int
+  sales  Sale[]
+}
+
+model Sale {
+  id          Int       @id @default(autoincrement())
+  amount      Int
+  date        DateTime
+  apartment   Apartment @relation(fields: [apartmentId], references: [id])
+  apartmentId Int
+  product     Product   @relation(fields: [productId], references: [id])
+  productId   Int
+
+  @@index([apartmentId, productId])
+}

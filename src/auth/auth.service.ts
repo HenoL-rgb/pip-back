@@ -12,13 +12,14 @@ export class AuthService {
 
   async validateUser(email: string, pass: string): Promise<any> {
     const user = await this.employeesService.getEmployeeByEmail(email);
-    console.log(user);
 
     if (user) {
       const passwordEquals = await bcrypt.compare(pass, user.password);
 
       if (passwordEquals) {
         const { password, ...result } = user;
+        console.log(result);
+
         return result;
       }
     }
@@ -26,10 +27,22 @@ export class AuthService {
   }
 
   async login(user: any) {
-    const payload = { email: user.email, sub: user.userId };
+    const payload = { email: user.email, sub: user.id, roles: user.roles.map(role => role.name) };
+    
+    const accessToken = this.jwtService.sign(payload, {
+      secret: process.env.JWT_SECRET_KEY,
+    });
+    const refreshToken = this.jwtService.sign(payload, {
+      secret: process.env.JWT_REFRESH_SECRET_KEY,
+    });
+
+    await this.employeesService.updateEmployee(user.id, {
+      refreshToken,
+    });
+
     return {
       access_token: this.jwtService.sign(payload, {
-        secret: process.env.JWT_SECRET_KEY,
+        secret: process.env.JWT_SECRET_KEY,  
       }),
     };
   }

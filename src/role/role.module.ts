@@ -1,13 +1,10 @@
 import { Module } from '@nestjs/common';
-import { RoleService } from './role.service';
 import { RoleController } from './role.controller';
-import { SequelizeModule } from '@nestjs/sequelize';
-import { Role } from './role.model';
-import { UserRoles } from './user-roles.model';
-import { Employee } from 'src/employees/employees.model';
+import { RoleService } from './role.service';
+import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({
-  imports: [SequelizeModule.forFeature([Role, Employee, UserRoles])],
+  imports: [PrismaModule],
   controllers: [RoleController],
   providers: [RoleService],
   exports: [RoleService]

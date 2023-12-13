@@ -1,18 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { Product } from './products.model';
 
 @Injectable()
 export class ProductsService {
-  constructor(
-    @InjectModel(Product) private productRepository: typeof Product,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   async createProduct(dto: CreateProductDto) {
     try {
-      const product = await this.productRepository.create(dto);
+      const product = await this.prisma.product.create({ data: dto });
       return product;
     } catch (error) {
       console.log(error);
@@ -21,7 +18,7 @@ export class ProductsService {
 
   async getAllProducts() {
     try {
-      const products = await this.productRepository.findAll();
+      const products = await this.prisma.product.findMany();
       return products;
     } catch (error) {
       console.log(error);
@@ -30,7 +27,9 @@ export class ProductsService {
 
   async getProductById(productId: number) {
     try {
-      const product = await this.productRepository.findByPk(productId);
+      const product = await this.prisma.product.findUnique({
+        where: { id: productId },
+      });
       return product;
     } catch (error) {
       console.log(error);
@@ -39,7 +38,7 @@ export class ProductsService {
 
   async deleteProduct(productId: number) {
     try {
-      const product = await this.productRepository.destroy({
+      const product = await this.prisma.product.delete({
         where: {
           id: productId,
         },
@@ -53,10 +52,11 @@ export class ProductsService {
 
   async updateProduct(id: number, dto: UpdateProductDto) {
     try {
-      const product = await this.productRepository.update(dto, {
+      const product = await this.prisma.product.update({
         where: {
           id,
         },
+        data: dto,
       });
 
       return product;

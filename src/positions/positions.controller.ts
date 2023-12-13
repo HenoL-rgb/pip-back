@@ -2,7 +2,6 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, UsePipes, Validation
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreatePositionDto } from './dto/create-position.dto';
 import { UpdatePositionDto } from './dto/update-position.dto';
-import { Position } from './position.model';
 import { PositionsService } from './positions.service';
 
 @ApiTags('Positions module')
@@ -11,7 +10,6 @@ export class PositionsController {
     constructor(private positionsService: PositionsService) {}
 
     @ApiOperation({summary: 'Creating Position'})
-    @ApiResponse({status: 200, type: Position})
     @UsePipes(ValidationPipe)
     @Post()
     createPosition(@Body() dto: CreatePositionDto) {
@@ -19,14 +17,12 @@ export class PositionsController {
     }
 
     @ApiOperation({summary: 'Get all positions'})
-    @ApiResponse({status: 200, type: [Position]})
     @Get()
     getAllPositions() {
         return this.positionsService.getAllPositions()
     }
 
     @ApiOperation({summary: 'Get Position by id'})
-    @ApiResponse({status: 200, type: Position})
     @Get(':id')
     getPositionById(@Param('id') id: number) {
         return this.positionsService.getPositionById(id)

@@ -1,19 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
-import { City } from 'src/cities/cities.model';
-import { Apartment } from './apartments.model';
+import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateApartmentDto } from './dto/create-apartment.dto';
 import { UpdateApartmentDto } from './dto/update-apartment.dto';
 
 @Injectable()
 export class ApartmentsService {
-  constructor(
-    @InjectModel(Apartment) private apartmentRepository: typeof Apartment,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   async createApartment(dto: CreateApartmentDto) {
     try {
-      const apartment = await this.apartmentRepository.create(dto);
+      const apartment = await this.prisma.apartment.create({ data: dto });
       return apartment;
     } catch (error) {
       console.log(error);
@@ -22,8 +18,10 @@ export class ApartmentsService {
 
   async getAllApartments() {
     try {
-      const apartments = await this.apartmentRepository.findAll({
-        include: City,
+      const apartments = await this.prisma.apartment.findMany({
+        include: {
+          city: true,
+        },
       });
       return apartments;
     } catch (error) {
@@ -33,8 +31,13 @@ export class ApartmentsService {
 
   async getApartmentById(apartmentId: number) {
     try {
-      const apartment = await this.apartmentRepository.findByPk(apartmentId, {
-        include: City,
+      const apartment = await this.prisma.apartment.findUnique({
+        where: {
+          id: apartmentId,
+        },
+        include: {
+          city: true,
+        },
       });
       return apartment;
     } catch (error) {
@@ -44,7 +47,7 @@ export class ApartmentsService {
 
   async deleteApartment(apartmentId: number) {
     try {
-      const apartment = await this.apartmentRepository.destroy({
+      const apartment = await this.prisma.apartment.delete({
         where: {
           id: apartmentId,
         },
@@ -58,10 +61,11 @@ export class ApartmentsService {
 
   async updateApartment(id: number, dto: UpdateApartmentDto) {
     try {
-      const apartment = await this.apartmentRepository.update(dto, {
+      const apartment = await this.prisma.apartment.update({
         where: {
           id,
         },
+        data: dto,
       });
 
       return apartment;

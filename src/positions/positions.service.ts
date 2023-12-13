@@ -1,18 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
 import { CreatePositionDto } from './dto/create-position.dto';
 import { UpdatePositionDto } from './dto/update-position.dto';
-import { Position } from './position.model';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class PositionsService {
-  constructor(
-    @InjectModel(Position) private positionRepository: typeof Position,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   async createPosition(dto: CreatePositionDto) {
     try {
-      const position = await this.positionRepository.create(dto);
+      const position = await this.prisma.position.create({ data: dto });
       return position;
     } catch (error) {
       console.log(error);
@@ -21,7 +18,7 @@ export class PositionsService {
 
   async getAllPositions() {
     try {
-      const positions = await this.positionRepository.findAll();
+      const positions = await this.prisma.position.findMany();
       return positions;
     } catch (error) {
       console.log(error);
@@ -30,7 +27,9 @@ export class PositionsService {
 
   async getPositionById(positionId: number) {
     try {
-      const position = await this.positionRepository.findByPk(positionId);
+      const position = await this.prisma.position.findUnique({
+        where: { id: positionId },
+      });
       return position;
     } catch (error) {
       console.log(error);
@@ -39,7 +38,7 @@ export class PositionsService {
 
   async deletePosition(positionId: number) {
     try {
-      const position = await this.positionRepository.destroy({
+      const position = await this.prisma.position.delete({
         where: {
           id: positionId,
         },
@@ -53,10 +52,11 @@ export class PositionsService {
 
   async updatePosition(id: number, dto: UpdatePositionDto) {
     try {
-      const position = await this.positionRepository.update(dto, {
+      const position = await this.prisma.position.update({
         where: {
           id,
         },
+        data: dto,
       });
 
       return position;

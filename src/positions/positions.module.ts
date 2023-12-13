@@ -1,15 +1,11 @@
 import { Module } from '@nestjs/common';
-import { SequelizeModule } from '@nestjs/sequelize';
-import { Employee } from 'src/employees/employees.model';
-import { Position } from './position.model';
 import { PositionsController } from './positions.controller';
 import { PositionsService } from './positions.service';
+import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({
   controllers: [PositionsController],
   providers: [PositionsService],
-  imports: [
-    SequelizeModule.forFeature([Position, Employee])
-  ]
+  imports: [PrismaModule],
 })
 export class PositionsModule {}

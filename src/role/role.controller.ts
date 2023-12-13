@@ -3,25 +3,27 @@ import { RoleService } from './role.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { Public } from 'src/auth/public.decorator';
 
 @ApiTags('Roles module')
 @Controller('role')
 export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 
+  @Public()
   @Post()
   create(@Body() createRoleDto: CreateRoleDto) {
     return this.roleService.create(createRoleDto);
   }
 
   @Get()
-  findAll() {
-    return this.roleService.findAll();
+  findMany() {
+    return this.roleService.findMany();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.roleService.findOne(+id);
+  findFirst(@Param('id') id: string) {
+    return this.roleService.findFirst(+id);
   }
 
   @Get(':value')

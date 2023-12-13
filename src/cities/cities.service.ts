@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { City } from './cities.model';
 import { CreateCityDto } from './dto/create-city.dto';
 import { UpdateCityDto } from './dto/update-city.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class CitiesService {
-  constructor(@InjectModel(City) private cityRepository: typeof City) {}
+  constructor(private prisma: PrismaService) {}
 
   async createCity(dto: CreateCityDto) {
     try {
-      const city = await this.cityRepository.create(dto);
+      const city = await this.prisma.city.create({ data: dto });
       return city;
     } catch (error) {
       console.log(error);
@@ -19,7 +19,7 @@ export class CitiesService {
 
   async getAllCities() {
     try {
-      const cities = await this.cityRepository.findAll();
+      const cities = await this.prisma.city.findMany();
       return cities;
     } catch (error) {
       console.log(error);
@@ -28,7 +28,7 @@ export class CitiesService {
 
   async getCityById(cityId: number) {
     try {
-      const city = await this.cityRepository.findByPk(cityId);
+      const city = await this.prisma.city.findUnique({ where: { id: cityId } });
       return city;
     } catch (error) {
       console.log(error);
@@ -37,7 +37,7 @@ export class CitiesService {
 
   async deleteCity(cityId: number) {
     try {
-      const city = await this.cityRepository.destroy({
+      const city = await this.prisma.city.delete({
         where: {
           id: cityId,
         },
@@ -51,10 +51,11 @@ export class CitiesService {
 
   async updateCity(id: number, dto: UpdateCityDto) {
     try {
-      const city = await this.cityRepository.update(dto, {
+      const city = await this.prisma.city.update({
         where: {
           id,
         },
+        data: dto,
       });
 
       return city;

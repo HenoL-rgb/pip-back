@@ -1,6 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Apartment } from './apartments.model';
 import { ApartmentsService } from './apartments.service';
 import { CreateApartmentDto } from './dto/create-apartment.dto';
 import { UpdateApartmentDto } from './dto/update-apartment.dto';
@@ -11,7 +10,6 @@ export class ApartmentsController {
     constructor(private apartmentsService: ApartmentsService) {}
 
     @ApiOperation({summary: 'Creating apartment'})
-    @ApiResponse({status: 200, type: Apartment})
     @UsePipes(ValidationPipe)
     @Post()
     createApartment(@Body() dto: CreateApartmentDto) {
@@ -19,14 +17,12 @@ export class ApartmentsController {
     }
 
     @ApiOperation({summary: 'Get all apartments'})
-    @ApiResponse({status: 200, type: [Apartment]})
     @Get()
     getAllApartments() {
         return this.apartmentsService.getAllApartments()
     }
 
     @ApiOperation({summary: 'Get apartment by id'})
-    @ApiResponse({status: 200, type: Apartment})
     @Get('/:value')
     getApartmentById(@Param('value') value: number) {
         return this.apartmentsService.getApartmentById(value)
