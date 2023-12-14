@@ -33,7 +33,17 @@ export class EmployeesService {
 
   async getAllEmployees() {
     try {
-      const employees = await this.prisma.employee.findMany();
+      const employees = await this.prisma.employee.findMany({
+        select: {
+          id: true,
+          apartment: true,
+          name: true,
+          surname: true,
+          age: true,
+          position: true,
+          email: true,
+        }
+      });
       return employees;
     } catch (error) {
       console.log(error);
@@ -42,17 +52,50 @@ export class EmployeesService {
 
   async getEmployeeById(employeeId: number) {
     try {
-      const employee = await this.prisma.employee.findUnique({
+      const { password, refreshToken, ...employee } = await this.prisma.employee.findUnique({
         where: { id: employeeId },
+        include: {
+          roles: {
+            select: {
+              name: true,
+            },
+          },
+          apartment: true,
+          position: true,
+        },
       });
+
       return employee;
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async getEmployeeRefreshToken(employeeId: number) {
+    try {
+      const { refreshToken } = await this.prisma.employee.findUnique({
+        where: { id: employeeId },
+        include: {
+          roles: {
+            select: {
+              name: true,
+            },
+          },
+          apartment: true,
+          position: true,
+        },
+      });
+
+      return refreshToken;
+
     } catch (error) {
       console.log(error);
     }
   }
 
   async getEmployeeByEmail(email: string) {
-    return await this.prisma.employee.findFirst({
+    const employee = await this.prisma.employee.findFirst({
       where: {
         email,
       },
@@ -66,6 +109,8 @@ export class EmployeesService {
         position: true,
       },
     });
+
+    return employee;
   }
 
   async deleteEmployee(employeeId: number) {

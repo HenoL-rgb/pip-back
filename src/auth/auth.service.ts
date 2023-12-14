@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { EmployeesService } from 'src/employees/employees.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import * as jsonwebtoken from 'jsonwebtoken';
+import { Request } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -18,7 +20,6 @@ export class AuthService {
 
       if (passwordEquals) {
         const { password, ...result } = user;
-        console.log(result);
 
         return result;
       }
@@ -27,13 +28,18 @@ export class AuthService {
   }
 
   async login(user: any) {
-    const payload = { email: user.email, sub: user.id, roles: user.roles.map(role => role.name) };
-    
+    const payload = {
+      email: user.email,
+      userId: user.id,
+      roles: user.roles.map((role) => role.name),
+    };
+
     const accessToken = this.jwtService.sign(payload, {
       secret: process.env.JWT_SECRET_KEY,
     });
     const refreshToken = this.jwtService.sign(payload, {
       secret: process.env.JWT_REFRESH_SECRET_KEY,
+      expiresIn: 3600,
     });
 
     await this.employeesService.updateEmployee(user.id, {
@@ -41,9 +47,36 @@ export class AuthService {
     });
 
     return {
-      access_token: this.jwtService.sign(payload, {
-        secret: process.env.JWT_SECRET_KEY,  
-      }),
+      accessToken,
+      refreshToken,
     };
+  }
+
+  async refresh(req: Request) {
+    try {
+      const refreshToken = req.headers.authorization.split(' ')[1];
+
+      const { userId, email, roles } = jsonwebtoken.verify(
+        req.headers.authorization.split(' ')[1],
+        process.env.JWT_REFRESH_SECRET_KEY,
+        { complete: true },
+      ).payload as { userId: number; email: string; roles: string[] };
+
+      const usersRefresh = await this.employeesService.getEmployeeRefreshToken(
+        userId,
+      );
+
+      const mappedRoles = roles.map((role) => ({ name: role }));
+
+      if (refreshToken === usersRefresh) {
+        return this.login({
+          email,
+          roles: mappedRoles,
+          id: userId,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
   }
 }

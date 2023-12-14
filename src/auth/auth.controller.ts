@@ -14,4 +14,10 @@ export class AuthController {
   async login(@Request() req) {
     return this.authService.login(req.user);
   }
+
+  @Public()
+  @Post('refresh')
+  async refresh(@Request() req) {
+    return this.authService.refresh(req);
+  }
 }

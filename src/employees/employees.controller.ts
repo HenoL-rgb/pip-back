@@ -22,8 +22,7 @@ export class EmployeesController {
   constructor(private employeesService: EmployeesService) {}
 
   @ApiOperation({ summary: 'Creating Employee' })
-  @Public()
-  @Roles('ADMIN', 'USER')
+  @Roles('ADMIN')
   @UsePipes(ValidationPipe)
   @Post()
   createEmployee(@Body() dto: CreateEmployeeDto) {
