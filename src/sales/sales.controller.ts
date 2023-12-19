@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UsePipes } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UsePipes } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ValidationPipe } from 'src/pipes/validation.pipe';
 import { CreateSaleDto } from './dto/create-sale-dto';
 import { UpdateSaleDto } from './dto/update-sale.dto';
 import { SalesService } from './sales.service';
+import { PaginationDto } from 'src/shared/dto/paginatedDto/paginatedDto';
 
 @ApiTags('Sales module')
 @Controller('sales')
@@ -19,8 +20,8 @@ export class SalesController {
 
     @ApiOperation({summary: 'Get all Sales'})
     @Get()
-    getAllSales() {
-        return this.salesService.getAllSales()
+    getAllSales(@Query() pagination: PaginationDto) {
+        return this.salesService.getAllSales(pagination)
     }
 
     @ApiOperation({summary: 'Get Sale by id'})

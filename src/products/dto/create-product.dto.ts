@@ -9,4 +9,8 @@ export class CreateProductDto {
   @ApiProperty({ example: 13, description: 'product amount' })
   @IsNumber()
   readonly amount: number;
+
+  @ApiProperty({example: 1, description: 'apartment id'})
+  @IsNumber()
+  readonly apartmentId: number;
 }

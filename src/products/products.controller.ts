@@ -1,8 +1,9 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductsService } from './products.service';
+import { PaginationDto } from 'src/shared/dto/paginatedDto/paginatedDto';
 
 @ApiTags('Products module')
 @Controller('products')
@@ -18,8 +19,8 @@ export class ProductsController {
 
     @ApiOperation({summary: 'Get all positions'})
     @Get()
-    getAllProducts() {
-        return this.productsService.getAllProducts()
+    getAllProducts(@Query() pagination: PaginationDto) {
+        return this.productsService.getAllProducts(pagination)
     }
 
     @ApiOperation({summary: 'Get Position by id'})

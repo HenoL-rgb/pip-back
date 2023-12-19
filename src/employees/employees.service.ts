@@ -4,6 +4,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { RoleService } from 'src/role/role.service';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
+import { PaginationDto } from 'src/shared/dto/paginatedDto/paginatedDto';
 
 @Injectable()
 export class EmployeesService {
@@ -31,9 +32,21 @@ export class EmployeesService {
     }
   }
 
-  async getAllEmployees() {
+  async getAllEmployees({ limit, offset }: PaginationDto) {
     try {
-      const employees = await this.prisma.employee.findMany({
+      const options: {
+        select: {
+          id: true;
+          apartment: true;
+          name: true;
+          surname: true;
+          age: true;
+          position: true;
+          email: true;
+        };
+        skip?: number;
+        take?: number;
+      } = {
         select: {
           id: true,
           apartment: true,
@@ -42,8 +55,15 @@ export class EmployeesService {
           age: true,
           position: true,
           email: true,
-        }
-      });
+        },
+        skip: +offset || 0,
+      };
+
+      if (limit) {
+        options.take = +limit;
+      }
+
+      const employees = await this.prisma.employee.findMany(options);
       return employees;
     } catch (error) {
       console.log(error);
@@ -52,21 +72,21 @@ export class EmployeesService {
 
   async getEmployeeById(employeeId: number) {
     try {
-      const { password, refreshToken, ...employee } = await this.prisma.employee.findUnique({
-        where: { id: employeeId },
-        include: {
-          roles: {
-            select: {
-              name: true,
+      const { password, refreshToken, ...employee } =
+        await this.prisma.employee.findUnique({
+          where: { id: employeeId },
+          include: {
+            roles: {
+              select: {
+                name: true,
+              },
             },
+            apartment: true,
+            position: true,
           },
-          apartment: true,
-          position: true,
-        },
-      });
+        });
 
       return employee;
-
     } catch (error) {
       console.log(error);
     }
@@ -88,7 +108,6 @@ export class EmployeesService {
       });
 
       return refreshToken;
-
     } catch (error) {
       console.log(error);
     }

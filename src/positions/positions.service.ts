@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreatePositionDto } from './dto/create-position.dto';
 import { UpdatePositionDto } from './dto/update-position.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { PaginationDto } from 'src/shared/dto/paginatedDto/paginatedDto';
 
 @Injectable()
 export class PositionsService {
@@ -16,9 +17,15 @@ export class PositionsService {
     }
   }
 
-  async getAllPositions() {
+  async getAllPositions({ limit, offset }: PaginationDto) {
     try {
-      const positions = await this.prisma.position.findMany();
+      const options: { skip: number; take?: number } = {
+        skip: +offset || 0,
+      };
+      if (limit) {
+        options.take = +limit;
+      }
+      const positions = await this.prisma.position.findMany(options);
       return positions;
     } catch (error) {
       console.log(error);

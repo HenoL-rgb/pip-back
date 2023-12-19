@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CitiesService } from './cities.service';
 import { CreateCityDto } from './dto/create-city.dto';
 import { UpdateCityDto } from './dto/update-city.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { PaginationDto } from 'src/shared/dto/paginatedDto/paginatedDto';
 
 @ApiTags('Cities module')
 @Controller('cities')
@@ -20,8 +21,8 @@ export class CitiesController {
 
     @ApiOperation({summary: 'Get all cities'})
     @Get()
-    getAllCities() {
-        return this.citiesService.getAllCities()
+    getAllCities(@Query() pagination: PaginationDto) {
+        return this.citiesService.getAllCities(pagination)
     }
 
     @ApiOperation({summary: 'Get city by id'})

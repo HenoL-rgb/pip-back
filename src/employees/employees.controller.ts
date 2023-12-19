@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -13,8 +14,8 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { EmployeesService } from './employees.service';
-import { Public } from 'src/auth/public.decorator';
 import { Roles } from 'src/role/role.decorator';
+import { PaginationDto } from 'src/shared/dto/paginatedDto/paginatedDto';
 
 @ApiTags('Employee module')
 @Controller('employees')
@@ -31,8 +32,8 @@ export class EmployeesController {
 
   @ApiOperation({ summary: 'Get all employees' })
   @Get()
-  getAllEmployees() {
-    return this.employeesService.getAllEmployees();
+  getAllEmployees(@Query() pagination?: PaginationDto) {
+    return this.employeesService.getAllEmployees(pagination);
   }
 
   @ApiOperation({ summary: 'Get Employee by id' })

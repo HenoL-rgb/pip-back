@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
 import { CreateCityDto } from './dto/create-city.dto';
 import { UpdateCityDto } from './dto/update-city.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { PaginationDto } from 'src/shared/dto/paginatedDto/paginatedDto';
 
 @Injectable()
 export class CitiesService {
@@ -17,9 +17,15 @@ export class CitiesService {
     }
   }
 
-  async getAllCities() {
+  async getAllCities({ limit, offset }: PaginationDto) {
     try {
-      const cities = await this.prisma.city.findMany();
+      const options: { skip: number; take?: number } = {
+        skip: +offset || 0,
+      };
+      if (limit) {
+        options.take = +limit;
+      }
+      const cities = await this.prisma.city.findMany(options);
       return cities;
     } catch (error) {
       console.log(error);

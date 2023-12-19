@@ -39,6 +39,7 @@ model Apartment {
   cityId    Int
   employees Employee[]
   sales     Sale[]
+  products Product[]
 }
 
 model Position {
@@ -57,6 +58,8 @@ model Product {
   id     Int    @id @default(autoincrement())
   name   String
   amount Int
+  apartmentId Int
+  apartment Apartment @relation(fields: [apartmentId], references: [id])
   sales  Sale[]
 }
 

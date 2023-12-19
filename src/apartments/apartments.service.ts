@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateApartmentDto } from './dto/create-apartment.dto';
 import { UpdateApartmentDto } from './dto/update-apartment.dto';
+import { PaginationDto } from 'src/shared/dto/paginatedDto/paginatedDto';
 
 @Injectable()
 export class ApartmentsService {
@@ -16,13 +17,24 @@ export class ApartmentsService {
     }
   }
 
-  async getAllApartments() {
+  async getAllApartments({ limit, offset }: PaginationDto) {
     try {
-      const apartments = await this.prisma.apartment.findMany({
+      const options: {
+        include: { city: boolean };
+        skip?: number;
+        take?: number;
+      } = {
         include: {
           city: true,
         },
-      });
+        skip: +offset || 0,
+      };
+
+      if (limit) {
+        options.take = +limit;
+      }
+
+      const apartments = await this.prisma.apartment.findMany(options);
       return apartments;
     } catch (error) {
       console.log(error);
@@ -72,5 +84,23 @@ export class ApartmentsService {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  async getApartmentStats(id: number) {
+    const products = this.prisma.product.findMany({
+      where: {
+        apartmentId: id,
+      },
+    });
+    const sales = this.prisma.sale.findMany({
+      where: {
+        apartmentId: id,
+      },
+    });
+    const employees = this.prisma.employee.findMany({
+      where: {
+        apartmentId: id,
+      },
+    });
   }
 }

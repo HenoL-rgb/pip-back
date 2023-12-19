@@ -3,6 +3,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { ProductsService } from 'src/products/products.service';
 import { CreateSaleDto } from './dto/create-sale-dto';
 import { UpdateSaleDto } from './dto/update-sale.dto';
+import { PaginationDto } from 'src/shared/dto/paginatedDto/paginatedDto';
 
 @Injectable()
 export class SalesService {
@@ -36,9 +37,15 @@ export class SalesService {
     }
   }
 
-  async getAllSales() {
+  async getAllSales({ limit, offset }: PaginationDto) {
     try {
-      const sales = await this.prisma.sale.findMany();
+      const options: { skip: number; take?: number } = {
+        skip: +offset || 0,
+      };
+      if (limit) {
+        options.take = +limit;
+      }
+      const sales = await this.prisma.sale.findMany(options);
       return sales;
     } catch (error) {
       console.log(error);
