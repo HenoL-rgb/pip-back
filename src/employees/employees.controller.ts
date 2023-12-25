@@ -42,6 +42,12 @@ export class EmployeesController {
     return this.employeesService.getEmployeeById(id);
   }
 
+  @ApiOperation({summary: 'Get employee by position'})
+  @Get(':id')
+  getEmployeesByPosition(@Query() query: string) {
+    return this.employeesService.getEmployeesByPosition(query)
+  }
+
   @ApiOperation({ summary: 'Delete Employee' })
   @ApiResponse({ status: 200, type: Number })
   @Delete(':id')

@@ -51,7 +51,13 @@ export class ApartmentsController {
   @ApiResponse({ status: 200, type: Number })
   @UsePipes(ValidationPipe)
   @Patch(':id')
-  updateCity(@Param('id') id: number, @Body() dto: UpdateApartmentDto) {
+  updateApartment(@Param('id') id: number, @Body() dto: UpdateApartmentDto) {
     return this.apartmentsService.updateApartment(+id, dto);
+  }
+  
+  @ApiOperation({summary: 'Get employees amount by apartments'})
+  @Get('employees')
+  getApatmentsFullness() {
+    
   }
 }

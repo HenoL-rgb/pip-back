@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RoleService } from 'src/role/role.service';
@@ -156,6 +156,35 @@ export class EmployeesService {
       });
 
       return employee;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async getEmployeesByPosition(position: string) {
+    try {
+      const isPosition = await this.prisma.position.findFirst({
+        where: {
+          name: position,
+        },
+      });
+      if (isPosition) {
+        const employees = await this.prisma.employee.findMany({
+          where: {
+            positionId: isPosition.id,
+          },
+        });
+        return employees;
+      } else {
+        throw new HttpException(
+          {
+            status: HttpStatus.BAD_REQUEST,
+            error: 'Bad request',
+            message: 'Position doesnt exist',
+          },
+          HttpStatus.BAD_REQUEST,
+        );
+      }
     } catch (error) {
       console.log(error);
     }

@@ -86,21 +86,21 @@ export class ApartmentsService {
     }
   }
 
-  async getApartmentStats(id: number) {
-    const products = this.prisma.product.findMany({
-      where: {
-        apartmentId: id,
+  async getApartmentsFullness() {
+    const apartments = await this.prisma.apartment.findMany({
+      include: {
+        employees: true,
       },
     });
-    const sales = this.prisma.sale.findMany({
-      where: {
-        apartmentId: id,
-      },
+
+    const mappedApartments = apartments.map((apartment) => {
+      const { employees, ...apartmentWithoutEmployees } = apartment;
+      return {
+        ...apartmentWithoutEmployees,
+        employeesAmount: employees.length,
+      };
     });
-    const employees = this.prisma.employee.findMany({
-      where: {
-        apartmentId: id,
-      },
-    });
+
+    return mappedApartments;
   }
 }

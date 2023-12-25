@@ -89,4 +89,27 @@ export class SalesService {
       console.log(error);
     }
   }
+
+  async getSalesByDate({
+    startDate,
+    endDate,
+  }: {
+    startDate: Date;
+    endDate: Date;
+  }) {
+    try {
+      const sales = await this.prisma.sale.findMany({
+        where: {
+          date: {
+            lte: endDate,
+            gte: startDate,
+          },
+        },
+      });
+
+      return sales;
+    } catch (error) {
+      console.error(error);
+    }
+  }
 }
