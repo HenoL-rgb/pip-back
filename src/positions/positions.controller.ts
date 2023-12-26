@@ -10,13 +10,14 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreatePositionDto } from './dto/create-position.dto';
 import { UpdatePositionDto } from './dto/update-position.dto';
 import { PositionsService } from './positions.service';
 import { PaginationDto } from 'src/shared/dto/paginatedDto/paginatedDto';
 
 @ApiTags('Positions module')
+@ApiBearerAuth()
 @Controller('positions')
 export class PositionsController {
   constructor(private positionsService: PositionsService) {}

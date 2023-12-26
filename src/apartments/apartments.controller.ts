@@ -10,13 +10,14 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApartmentsService } from './apartments.service';
 import { CreateApartmentDto } from './dto/create-apartment.dto';
 import { UpdateApartmentDto } from './dto/update-apartment.dto';
 import { PaginationDto } from 'src/shared/dto/paginatedDto/paginatedDto';
 
 @ApiTags('Apartments module')
+@ApiBearerAuth()
 @Controller('apartments')
 export class ApartmentsController {
   constructor(private apartmentsService: ApartmentsService) {}
@@ -34,10 +35,16 @@ export class ApartmentsController {
     return this.apartmentsService.getAllApartments(pagination);
   }
 
+  @ApiOperation({summary: 'Get employees amount by apartments'})
+  @Get('employees')
+  getApartmentsFullness() {
+    return this.apartmentsService.getApartmentsFullness();
+  }
+
   @ApiOperation({ summary: 'Get apartment by id' })
-  @Get('/:value')
+  @Get(':value')
   getApartmentById(@Param('value') value: number) {
-    return this.apartmentsService.getApartmentById(value);
+    return this.apartmentsService.getApartmentById(+value);
   }
 
   @ApiOperation({ summary: 'Delete apartment' })
@@ -55,9 +62,5 @@ export class ApartmentsController {
     return this.apartmentsService.updateApartment(+id, dto);
   }
   
-  @ApiOperation({summary: 'Get employees amount by apartments'})
-  @Get('employees')
-  getApatmentsFullness() {
-    
-  }
+  
 }

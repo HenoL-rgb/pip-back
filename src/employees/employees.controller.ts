@@ -10,7 +10,7 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateEmployeeDto } from './dto/create-employee.dto';
 import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { EmployeesService } from './employees.service';
@@ -18,6 +18,7 @@ import { Roles } from 'src/role/role.decorator';
 import { PaginationDto } from 'src/shared/dto/paginatedDto/paginatedDto';
 
 @ApiTags('Employee module')
+@ApiBearerAuth()
 @Controller('employees')
 export class EmployeesController {
   constructor(private employeesService: EmployeesService) {}

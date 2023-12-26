@@ -9,20 +9,19 @@ import {
   Query,
   UsePipes,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ValidationPipe } from 'src/pipes/validation.pipe';
 import { CreateSaleDto } from './dto/create-sale-dto';
 import { UpdateSaleDto } from './dto/update-sale.dto';
 import { SalesService } from './sales.service';
 import { PaginationDto } from 'src/shared/dto/paginatedDto/paginatedDto';
-import { Public } from 'src/auth/public.decorator';
 
 @ApiTags('Sales module')
+@ApiBearerAuth()
 @Controller('sales')
 export class SalesController {
   constructor(private salesService: SalesService) {}
 
-  @Public()
   @ApiOperation({ summary: 'Creating Sale' })
   @UsePipes(ValidationPipe)
   @Post()
@@ -42,7 +41,6 @@ export class SalesController {
     return this.salesService.getSaleById(id);
   }
 
-  @Public()
   @ApiOperation({ summary: 'Get sales by date' })
   @Post('date')
   getSalesBydate(@Body() body: { startDate: Date; endDate: Date }) {

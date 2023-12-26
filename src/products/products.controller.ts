@@ -1,11 +1,12 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UsePipes, ValidationPipe } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductsService } from './products.service';
 import { PaginationDto } from 'src/shared/dto/paginatedDto/paginatedDto';
 
 @ApiTags('Products module')
+@ApiBearerAuth()
 @Controller('products')
 export class ProductsController {
     constructor(private productsService: ProductsService) {}

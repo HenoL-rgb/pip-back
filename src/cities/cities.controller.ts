@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UsePipes, ValidationPipe } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CitiesService } from './cities.service';
 import { CreateCityDto } from './dto/create-city.dto';
 import { UpdateCityDto } from './dto/update-city.dto';
@@ -7,6 +7,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { PaginationDto } from 'src/shared/dto/paginatedDto/paginatedDto';
 
 @ApiTags('Cities module')
+@ApiBearerAuth()
 @Controller('cities')
 export class CitiesController {
 
