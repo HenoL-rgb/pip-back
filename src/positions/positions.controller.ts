@@ -15,6 +15,7 @@ import { CreatePositionDto } from './dto/create-position.dto';
 import { UpdatePositionDto } from './dto/update-position.dto';
 import { PositionsService } from './positions.service';
 import { PaginationDto } from 'src/shared/dto/paginatedDto/paginatedDto';
+import { Roles } from 'src/role/role.decorator';
 
 @ApiTags('Positions module')
 @ApiBearerAuth()
@@ -23,6 +24,7 @@ export class PositionsController {
   constructor(private positionsService: PositionsService) {}
 
   @ApiOperation({ summary: 'Creating Position' })
+  @Roles('ADMIN')
   @UsePipes(ValidationPipe)
   @Post()
   createPosition(@Body() dto: CreatePositionDto) {
@@ -43,6 +45,7 @@ export class PositionsController {
 
   @ApiOperation({ summary: 'Delete Position' })
   @ApiResponse({ status: 200, type: Number })
+  @Roles('ADMIN')
   @Delete(':id')
   deletePosition(@Param('id') id: number) {
     return this.positionsService.deletePosition(id);
@@ -50,6 +53,7 @@ export class PositionsController {
 
   @ApiOperation({ summary: 'Update position' })
   @ApiResponse({ status: 200, type: Number })
+  @Roles('ADMIN')
   @UsePipes(ValidationPipe)
   @Patch(':id')
   updatePosition(@Param('id') id: number, @Body() dto: UpdatePositionDto) {

@@ -15,6 +15,7 @@ import { ApartmentsService } from './apartments.service';
 import { CreateApartmentDto } from './dto/create-apartment.dto';
 import { UpdateApartmentDto } from './dto/update-apartment.dto';
 import { PaginationDto } from 'src/shared/dto/paginatedDto/paginatedDto';
+import { Roles } from 'src/role/role.decorator';
 
 @ApiTags('Apartments module')
 @ApiBearerAuth()
@@ -23,6 +24,7 @@ export class ApartmentsController {
   constructor(private apartmentsService: ApartmentsService) {}
 
   @ApiOperation({ summary: 'Creating apartment' })
+  @Roles('ADMIN')
   @UsePipes(ValidationPipe)
   @Post()
   createApartment(@Body() dto: CreateApartmentDto) {
@@ -49,6 +51,7 @@ export class ApartmentsController {
 
   @ApiOperation({ summary: 'Delete apartment' })
   @ApiResponse({ status: 200, type: Number })
+  @Roles('ADMIN')
   @Delete(':value')
   deleteApartment(@Param('value') value: number) {
     return this.apartmentsService.deleteApartment(value);
@@ -56,6 +59,7 @@ export class ApartmentsController {
 
   @ApiOperation({ summary: 'Update apartment' })
   @ApiResponse({ status: 200, type: Number })
+  @Roles('ADMIN')
   @UsePipes(ValidationPipe)
   @Patch(':id')
   updateApartment(@Param('id') id: number, @Body() dto: UpdateApartmentDto) {

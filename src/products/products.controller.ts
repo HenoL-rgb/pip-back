@@ -4,6 +4,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductsService } from './products.service';
 import { PaginationDto } from 'src/shared/dto/paginatedDto/paginatedDto';
+import { Roles } from 'src/role/role.decorator';
 
 @ApiTags('Products module')
 @ApiBearerAuth()
@@ -13,6 +14,7 @@ export class ProductsController {
 
     @ApiOperation({summary: 'Creating Position'})
     @UsePipes(ValidationPipe)
+    @Roles('ADMIN')
     @Post()
     createProduct(@Body() dto: CreateProductDto) {
         return this.productsService.createProduct(dto)

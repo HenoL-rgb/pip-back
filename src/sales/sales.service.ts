@@ -79,7 +79,7 @@ export class SalesService {
     try {
       const sale = await this.prisma.sale.update({
         where: {
-          id,
+          id: +id,
         },
         data: dto,
       });

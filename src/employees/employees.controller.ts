@@ -16,6 +16,7 @@ import { UpdateEmployeeDto } from './dto/update-employee.dto';
 import { EmployeesService } from './employees.service';
 import { Roles } from 'src/role/role.decorator';
 import { PaginationDto } from 'src/shared/dto/paginatedDto/paginatedDto';
+import { Public } from 'src/auth/public.decorator';
 
 @ApiTags('Employee module')
 @ApiBearerAuth()
@@ -51,6 +52,7 @@ export class EmployeesController {
 
   @ApiOperation({ summary: 'Delete Employee' })
   @ApiResponse({ status: 200, type: Number })
+  @Roles('ADMIN')
   @Delete(':id')
   deleteEmployee(@Param('id') id: number) {
     return this.employeesService.deleteEmployee(id);
@@ -58,6 +60,7 @@ export class EmployeesController {
 
   @ApiOperation({ summary: 'Update employee' })
   @ApiResponse({ status: 200, type: Number })
+  @Roles('ADMIN')
   @UsePipes(ValidationPipe)
   @Patch(':id')
   updateEmployee(@Param('id') id: number, @Body() dto: UpdateEmployeeDto) {
