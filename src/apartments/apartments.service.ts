@@ -20,12 +20,18 @@ export class ApartmentsService {
   async getAllApartments({ limit, offset }: PaginationDto) {
     try {
       const options: {
-        include: { city: boolean };
+        include: { city: boolean; sales: any; employees: boolean };
         skip?: number;
         take?: number;
       } = {
         include: {
           city: true,
+          sales: {
+            include: {
+              product: true,
+            },
+          },
+          employees: true,
         },
         skip: +offset || 0,
       };
@@ -35,11 +41,62 @@ export class ApartmentsService {
       }
 
       const apartments = await this.prisma.apartment.findMany(options);
-      return apartments;
+
+      const apartmentsByCity = {};
+      apartments.forEach((apartment) => {
+        if (!apartmentsByCity[apartment.city.name]) {
+          apartmentsByCity[apartment.city.name] = {};
+          apartmentsByCity[apartment.city.name].apartments = [];
+        }
+        apartmentsByCity[apartment.city.name].apartments.push(apartment);
+      });
+
+      for (const city in apartmentsByCity) {
+        let salesAmount = 0;
+        const sales = {};
+        for (const apartment of apartmentsByCity[city].apartments) {
+          for (const sale of apartment.sales) {
+            salesAmount++;
+            //@ts-ignore
+            if (!sales[sale.product.name]) {
+              //@ts-ignore
+
+              sales[sale.product.name] = sale.amount;
+            } else {
+              //@ts-ignore
+              sales[sale.product.name] += sale.amount;
+            }
+          }
+        }
+        apartmentsByCity[city].sales = sales;
+        apartmentsByCity[city].salesAmount = salesAmount;
+        apartmentsByCity[city].totalAmount = Object.values(sales).reduce(
+          (acc, item) => {
+            //@ts-ignore
+            return acc + item;
+          },
+          0,
+        );
+        console.log(sales);
+      }
+
+      const res = [];
+
+      for(const app in apartmentsByCity) {
+        res.push({city: app, ...apartmentsByCity[app], sales: Object.entries(apartmentsByCity[app].sales).map(([name, amount]) => ({productName: name, amount}))})
+      }
+
+      return res;
     } catch (error) {
       console.log(error);
     }
   }
+
+  async getApartments() {
+    return this.prisma.apartment.findMany();
+  }
+
+  
 
   async getApartmentById(apartmentId: number) {
     try {
@@ -49,9 +106,28 @@ export class ApartmentsService {
         },
         include: {
           city: true,
+          sales: true,
+          employees: true,
         },
       });
-      return apartment;
+
+      const groupedSales = apartment.sales.reduce((acc, sale) => {
+        const saleDate = new Date(sale.date).toLocaleString('en-GB'); // Format date as 'DD/MM/YYYY'
+        const existingGroup = acc.find(group => group.date === saleDate);
+        if (existingGroup) {
+            const existingProduct = existingGroup.products.find(product => product.productId === sale.productId);
+            if (existingProduct) {
+                existingProduct.amount += sale.amount;
+            } else {
+                existingGroup.products.push({ productId: sale.productId, amount: sale.amount });
+            }
+        } else {
+            acc.push({ date: saleDate, products: [{ productId: sale.productId, amount: sale.amount }] });
+        }
+        return acc;
+    }, []);
+
+      return {...apartment, salesForChart: groupedSales};
     } catch (error) {
       console.log(error);
     }

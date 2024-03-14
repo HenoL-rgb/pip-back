@@ -40,7 +40,7 @@ export class AuthService {
     });
     const refreshToken = this.jwtService.sign(payload, {
       secret: process.env.JWT_REFRESH_SECRET_KEY,
-      expiresIn: 3600,
+      expiresIn: 360000,
     });
 
     await this.employeesService.updateEmployee(user.id, {
@@ -50,6 +50,7 @@ export class AuthService {
     return {
       accessToken,
       refreshToken,
+      roles: payload.roles
     };
   }
 
@@ -62,7 +63,6 @@ export class AuthService {
         process.env.JWT_REFRESH_SECRET_KEY,
         { complete: true },
       ).payload as { userId: number; email: string; roles: string[] };
-
       const usersRefresh = await this.employeesService.getEmployeeRefreshToken(
         userId,
       );

@@ -25,7 +25,6 @@ export class ApartmentsController {
 
   @ApiOperation({ summary: 'Creating apartment' })
   @Roles('ADMIN')
-  @UsePipes(ValidationPipe)
   @Post()
   createApartment(@Body() dto: CreateApartmentDto) {
     return this.apartmentsService.createApartment(dto);
@@ -35,6 +34,12 @@ export class ApartmentsController {
   @Get()
   getAllApartments(@Query() pagination?: PaginationDto) {
     return this.apartmentsService.getAllApartments(pagination);
+  }
+
+  @ApiOperation({ summary: 'Get all apartments' })
+  @Get('admin')
+  getApartments() {
+    return this.apartmentsService.getApartments();
   }
 
   @ApiOperation({summary: 'Get employees amount by apartments'})

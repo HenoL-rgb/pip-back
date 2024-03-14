@@ -54,7 +54,7 @@ export class CitiesController {
   @Roles('ADMIN')
   @Delete(':id')
   deleteCity(@Param('id') id: number) {
-    return this.citiesService.deleteCity(id);
+    return this.citiesService.deleteCity(+id);
   }
 
   @ApiOperation({ summary: 'Update city' })
@@ -63,6 +63,6 @@ export class CitiesController {
   @UsePipes(ValidationPipe)
   @Patch(':id')
   updateCity(@Param('id') id: number, @Body() dto: UpdateCityDto) {
-    return this.citiesService.updateCity(id, dto);
+    return this.citiesService.updateCity(+id, dto);
   }
 }

@@ -40,7 +40,7 @@ export class PositionsController {
   @ApiOperation({ summary: 'Get Position by id' })
   @Get(':id')
   getPositionById(@Param('id') id: number) {
-    return this.positionsService.getPositionById(id);
+    return this.positionsService.getPositionById(+id);
   }
 
   @ApiOperation({ summary: 'Delete Position' })
@@ -48,7 +48,7 @@ export class PositionsController {
   @Roles('ADMIN')
   @Delete(':id')
   deletePosition(@Param('id') id: number) {
-    return this.positionsService.deletePosition(id);
+    return this.positionsService.deletePosition(+id);
   }
 
   @ApiOperation({ summary: 'Update position' })
@@ -57,6 +57,6 @@ export class PositionsController {
   @UsePipes(ValidationPipe)
   @Patch(':id')
   updatePosition(@Param('id') id: number, @Body() dto: UpdatePositionDto) {
-    return this.positionsService.updatePosition(id, dto);
+    return this.positionsService.updatePosition(+id, dto);
   }
 }

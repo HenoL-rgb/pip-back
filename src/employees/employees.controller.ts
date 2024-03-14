@@ -40,8 +40,8 @@ export class EmployeesController {
 
   @ApiOperation({ summary: 'Get Employee by id' })
   @Get(':id')
-  getEmployeeById(@Param('id') id: number) {
-    return this.employeesService.getEmployeeById(id);
+  getEmployeeById(@Param('id') id: string) {
+    return this.employeesService.getEmployeeById(+id);
   }
 
   @ApiOperation({summary: 'Get employee by position'})
@@ -55,15 +55,14 @@ export class EmployeesController {
   @Roles('ADMIN')
   @Delete(':id')
   deleteEmployee(@Param('id') id: number) {
-    return this.employeesService.deleteEmployee(id);
+    return this.employeesService.deleteEmployee(+id);
   }
 
   @ApiOperation({ summary: 'Update employee' })
   @ApiResponse({ status: 200, type: Number })
   @Roles('ADMIN')
-  @UsePipes(ValidationPipe)
   @Patch(':id')
   updateEmployee(@Param('id') id: number, @Body() dto: UpdateEmployeeDto) {
-    return this.employeesService.updateEmployee(id, dto);
+    return this.employeesService.updateEmployee(+id, dto);
   }
 }

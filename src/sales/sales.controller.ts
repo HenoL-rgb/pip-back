@@ -29,10 +29,10 @@ export class SalesController {
   constructor(private salesService: SalesService) {}
 
   @ApiOperation({ summary: 'Creating Sale' })
-  @UsePipes(ValidationPipe)
   @Roles('ADMIN')
   @Post()
   createSale(@Body() dto: CreateSaleDto) {
+    console.log(dto)
     return this.salesService.createSale(dto);
   }
 
@@ -47,7 +47,7 @@ export class SalesController {
   @Roles('ADMIN')
   @Get(':id')
   getSaleById(@Param('id') id: number) {
-    return this.salesService.getSaleById(id);
+    return this.salesService.getSaleById(+id);
   }
 
   @ApiOperation({ summary: 'Get sales by date' })
@@ -62,7 +62,7 @@ export class SalesController {
   @Roles('ADMIN')
   @Delete(':id')
   deleteSale(@Param('id') id: number) {
-    return this.salesService.deleteSale(id);
+    return this.salesService.deleteSale(+id);
   }
 
   @ApiOperation({ summary: 'Update Sale' })

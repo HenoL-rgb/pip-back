@@ -13,7 +13,6 @@ export class ProductsController {
     constructor(private productsService: ProductsService) {}
 
     @ApiOperation({summary: 'Creating Position'})
-    @UsePipes(ValidationPipe)
     @Roles('ADMIN')
     @Post()
     createProduct(@Body() dto: CreateProductDto) {
@@ -29,14 +28,14 @@ export class ProductsController {
     @ApiOperation({summary: 'Get Position by id'})
     @Get(':id')
     getProductById(@Param('id') id: number) {
-        return this.productsService.getProductById(id)
+        return this.productsService.getProductById(+id)
     }
 
     @ApiOperation({summary: 'Delete Position'})
     @ApiResponse({status: 200, type: Number})
     @Delete(':id')
     deleteProduct(@Param('id') id: number) {
-        return this.productsService.deleteProduct(id)
+        return this.productsService.deleteProduct(+id)
     }
 
     @ApiOperation({summary: 'Update position'})
@@ -44,6 +43,6 @@ export class ProductsController {
     @UsePipes(ValidationPipe)
     @Patch(':id')
     updateProduct(@Param('id') id: number, @Body() dto: UpdateProductDto) {
-        return this.productsService.updateProduct(id, dto)
+        return this.productsService.updateProduct(+id, dto)
     }
 }

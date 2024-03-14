@@ -26,7 +26,7 @@ export class SalesService {
         );
       }
 
-      const sale = await this.prisma.sale.create({ data: dto });
+      const sale = await this.prisma.sale.create({ data: {...dto, date: new Date(dto.date)} });
       await this.productsService.updateProduct(product.id, {
         amount: product.amount - dto.amount,
       });
@@ -54,7 +54,10 @@ export class SalesService {
 
   async getSaleById(saleId: number) {
     try {
-      const sale = await this.prisma.sale.findUnique({ where: { id: saleId } });
+      const sale = await this.prisma.sale.findUnique({ where: { id: saleId }, include: {
+        product: true,
+        apartment: true
+      } });
       return sale;
     } catch (error) {
       console.log(error);

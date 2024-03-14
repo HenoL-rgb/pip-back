@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -148,11 +149,20 @@ export class EmployeesService {
 
   async updateEmployee(id: number, dto: UpdateEmployeeDto) {
     try {
+      let data = { ...dto };
+      if (data.apartment) {
+        const apartment = await this.prisma.apartment.findUnique({
+          where: { id: +data.apartment },
+        });
+        const { apartment: garb, ...rest } = data;
+        data = { ...rest, apartmentId: apartment.id };
+      }
+      console.log(data)
       const employee = await this.prisma.employee.update({
         where: {
           id,
         },
-        data: dto,
+        data: data,
       });
 
       return employee;
